@@ -1,0 +1,30 @@
+/* Estilos para el navbar */
+header {
+  background-color: rgb(25, 2, 78);
+  color: white;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+nav a {
+  color: rgb(220, 21, 21);
+  text-decoration: none;
+}
+
+/* Estilos para el contenido principal */
+main {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Estilos para el pie de página */
+footer {
+  text-align: center;
+  background-color: gray;
+  color: rgb(25, 2, 78);
+  padding: 10px;
+}

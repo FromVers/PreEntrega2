@@ -1,0 +1,63 @@
+/* Estilos para el navbar */
+.navbar {
+    background-color: #007bff; /* Color azul */
+    color: #fff; /* Letras blancas */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    transition: background-color 0.3s; /* Transición en el cambio de color de fondo */
+  }
+  
+  /* Estilos para el logo */
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  /* Estilos para los enlaces del navbar */
+  .nav-links {
+    list-style: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin-right: 20px;
+  }
+  
+  .nav-links a {
+    color: #fff; /* Letras blancas */
+    text-decoration: none;
+    transition: color 0.3s; /* Transición en el cambio de color de texto */
+  }
+  
+  .nav-links a:hover {
+    color: #f2f2f2; /* Color de texto al hacer hover */
+  }
+  
+  /* Estilos para el carrito de compras */
+  .cart-icon {
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  /* Estilos para el botón de contacto */
+  .contact-button {
+    background-color: #fff;
+    color: #007bff; /* Color azul */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Transición en el cambio de color de fondo */
+  }
+  
+  .contact-button:hover {
+    background-color: #f2f2f2; /* Color de fondo al hacer hover */
+  }
+  
