@@ -1,4 +1,4 @@
-# PreEntrega2
+# Segunda práctica integradora
 Mi eCommerce
 Este es un proyecto de eCommerce desarrollado con Node.js, Express y MongoDB. Permite gestionar productos y carritos de compras. Los usuarios pueden ver todos los productos disponibles, agregar productos al carrito y ponerse en contacto con el equipo de soporte.
 
