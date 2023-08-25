@@ -5,7 +5,7 @@ const path = require("path");
 const productController = require("./controllers/productController");
 const userController = require("./controllers/userController");
 const dbConfig = require("./config/dbConfig");
-const sessionsRoutes = require("./routes/sessionsRoutes");
+const sessionsRoutes = require("./routes/sessionRoutes");
 
 const app = express();
 const port = 8080;
