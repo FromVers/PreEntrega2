@@ -1,23 +1,32 @@
-# Segunda práctica integradora
-Mi eCommerce
-Este es un proyecto de eCommerce desarrollado con Node.js, Express y MongoDB. Permite gestionar productos y carritos de compras. Los usuarios pueden ver todos los productos disponibles, agregar productos al carrito y ponerse en contacto con el equipo de soporte.
+# # Mi eCommerce - Documentación
 
-Configuración
-Clona este repositorio en tu máquina local.
-Instala las dependencias usando npm install.
-Configura la base de datos MongoDB en el archivo config/dbConfig.js.
-Ejecuta el servidor usando npm start.
+Este es el repositorio del proyecto "Mi eCommerce", un sistema de comercio electrónico desarrollado en Node.js y MongoDB.
 
-Uso
-Página de inicio: http://localhost:8080/
-Página de productos: http://localhost:8080/productos
-Página del carrito de compras: http://localhost:8080/carrito
-Página de contacto: http://localhost:8080/contacto
-Endpoints API
-El servidor proporciona los siguientes endpoints para interactuar con los productos:
+## Descripción
 
-GET /api/products: Obtiene todos los productos con filtros, paginación y ordenamientos.
-GET /api/products/:id: Obtiene un producto por su ID.
-POST /api/products: Agrega un nuevo producto.
-PUT /api/products/:id: Actualiza un producto por su ID.
-DELETE /api/products/:id: Elimina un producto por su ID.
+Mi eCommerce es una plataforma de comercio electrónico que permite a los usuarios ver, comprar y gestionar productos en línea. Los usuarios pueden navegar por diferentes categorías de productos, agregar productos a su carrito de compras y finalizar sus compras.
+
+## Requisitos
+
+- Node.js
+- MongoDB
+
+## Instalación
+
+1. Clona este repositorio en tu máquina local:
+
+   ```bash
+   git clone https://github.com/tu-usuario/mi-ecommerce.git
+
+# # Navega al directorio del proyecto:
+cd mi-ecommerce
+# # Instala las dependencias:
+npm install
+
+# # Configura las variables de entorno creando un archivo .env y agregando las siguientes variables:
+PORT=8080
+MONGODB_URI=tu_uri_de_mongodb
+SECRET_KEY=tu_clave_secreta
+
+# # Inicia el servidor:
+npm start
