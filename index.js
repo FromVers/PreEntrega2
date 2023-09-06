@@ -29,6 +29,23 @@ app.use(express.json());
 // Rutas para sesiones
 app.use("/api/sessions", sessionsRoutes);
 
+// Rutas que requieren autorización de administrador
+app.post("/admin/createProduct", checkAdmin, productController.createProduct);
+app.put(
+  "/admin/updateProduct/:id",
+  checkAdmin,
+  productController.updateProduct
+);
+app.delete(
+  "/admin/deleteProduct/:id",
+  checkAdmin,
+  productController.deleteProduct
+);
+
+// Rutas que requieren autorización de usuario normal
+app.post("/user/addToCart", checkUser, cartController.addToCart);
+// ... Otras rutas que requieran autorización de usuario normal
+
 // Ruta para la página de inicio
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
