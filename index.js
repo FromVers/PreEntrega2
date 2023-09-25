@@ -3,7 +3,7 @@ const session = require("express-session");
 const passport = require("./config/passportConfig");
 const path = require("path");
 const productController = require("./controllers/productController");
-const userController = require("./controllers/userController");
+const cartController = require("./controllers/cartController"); // Asegúrate de importar cartController u el controlador adecuado para el carrito
 const dbConfig = require("./config/dbConfig");
 const sessionsRoutes = require("./routes/sessionRoutes");
 
@@ -29,6 +29,24 @@ app.use(express.json());
 // Rutas para sesiones
 app.use("/api/sessions", sessionsRoutes);
 
+// Middleware para verificar el rol de administrador
+const checkAdmin = (req, res, next) => {
+  if (req.user && req.user.role === "admin") {
+    return next();
+  } else {
+    res.status(403).send("Acceso no autorizado");
+  }
+};
+
+// Middleware para verificar el rol de usuario normal
+const checkUser = (req, res, next) => {
+  if (req.user && req.user.role === "user") {
+    return next();
+  } else {
+    res.status(403).send("Acceso no autorizado");
+  }
+};
+
 // Rutas que requieren autorización de administrador
 app.post("/admin/createProduct", checkAdmin, productController.createProduct);
 app.put(
@@ -44,7 +62,7 @@ app.delete(
 
 // Rutas que requieren autorización de usuario normal
 app.post("/user/addToCart", checkUser, cartController.addToCart);
-// ... Otras rutas que requieran autorización de usuario normal
+// Rutas que requieran autorización de usuario normal aquí
 
 // Ruta para la página de inicio
 app.get("/", (req, res) => {

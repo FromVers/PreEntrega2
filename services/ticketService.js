@@ -1,35 +1,74 @@
 const Ticket = require("../models/Ticket");
+const Cart = require("../models/Cart");
+const Product = require("../models/Product");
 
-// Función para generar un ticket de compra
-async function generateTicket(cart, userEmail, totalAmount) {
+// Esta función procesa la compra del carrito de un usuario
+async function procesarCompra(userId, cartId) {
   try {
-    // Crea un nuevo objeto Ticket con los datos proporcionados
-    const newTicket = new Ticket({
-      code: generateUniqueCode(), // Genera un código único para el ticket (deberás implementar esta función)
-      purchase_datetime: new Date(), // Guarda la fecha y hora actual
-      amount: totalAmount, // Monto total de la compra
-      purchaser: userEmail, // Correo electrónico del usuario que realizó la compra
+    // 1. Verifica si el usuario tiene un carrito y obtén el carrito
+    const cart = await Cart.findOne({ _id: cartId, user: userId }).populate(
+      "items.product"
+    );
+
+    if (!cart) {
+      throw new Error("El carrito no existe o no pertenece a este usuario.");
+    }
+
+    // 2. Inicializa un arreglo vacío para los elementos comprados y el total de la compra
+    const ticketItems = [];
+    let totalAmount = 0;
+
+    // 3. Procesa cada elemento en el carrito
+    for (const cartItem of cart.items) {
+      const product = cartItem.product;
+      const requestedQuantity = cartItem.quantity;
+
+      // Verifica si hay suficiente stock disponible para la cantidad solicitada
+      if (product.stock >= requestedQuantity) {
+        // Calcula el monto del artículo y actualiza el stock
+        const itemAmount = product.price * requestedQuantity;
+        product.stock -= requestedQuantity;
+        totalAmount += itemAmount;
+
+        // Agrega el artículo al arreglo de elementos comprados
+        ticketItems.push({
+          product: product._id,
+          name: product.title,
+          quantity: requestedQuantity,
+          amount: itemAmount,
+        });
+      }
+    }
+
+    // 4. Crea un nuevo ticket con un código único, fecha y hora de compra, monto total y usuario comprador
+    const ticket = new Ticket({
+      code: generateUniqueTicketCode(), // Implementa esta función para generar códigos únicos
+      purchase_datetime: new Date(),
+      amount: totalAmount,
+      purchaser: userId,
+      items: ticketItems,
     });
 
-    // Guarda el ticket en la base de datos
-    await newTicket.save();
+    // 5. Guarda el ticket en la base de datos y actualiza el carrito
+    await ticket.save();
 
-    return newTicket; // Devuelve el ticket generado
+    // 6. Elimina los elementos comprados del carrito
+    cart.items = cart.items.filter(
+      (cartItem) =>
+        !ticketItems.some((item) => item.product.equals(cartItem.product))
+    );
+    await cart.save();
+
+    // 7. Devuelve el ticket creado
+    return ticket;
   } catch (error) {
-    console.error("Error generando el ticket:", error);
-    throw error; // Maneja cualquier error que pueda ocurrir durante la generación del ticket
+    throw error;
   }
 }
 
-// Función para generar un código único para el ticket (puedes implementarla según tus necesidades)
-function generateUniqueCode() {
-  // Aquí puedes implementar la lógica para generar códigos únicos
-  // Por ejemplo, podrías combinar la fecha actual con un número aleatorio
-  const currentDate = new Date();
-  const randomCode = Math.floor(Math.random() * 10000); // Número aleatorio entre 0 y 9999
-  return `TICKET-${currentDate.getTime()}-${randomCode}`;
+// Esta función debe implementarse para generar códigos únicos para los tickets
+function generateUniqueTicketCode() {
+  // Implementa la lógica para generar códigos únicos aquí
 }
 
-module.exports = {
-  generateTicket,
-};
+module.exports = { procesarCompra };
