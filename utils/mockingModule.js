@@ -1,4 +1,3 @@
-// mockingModule.js
 const generateMockProducts = () => {
   const mockProducts = [];
 

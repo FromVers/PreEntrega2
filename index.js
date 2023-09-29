@@ -3,9 +3,40 @@ const session = require("express-session");
 const passport = require("./config/passportConfig");
 const path = require("path");
 const productController = require("./controllers/productController");
-const cartController = require("./controllers/cartController"); // Asegúrate de importar cartController u el controlador adecuado para el carrito
+const cartsController = require("./controllers/cartsController");
 const dbConfig = require("./config/dbConfig");
 const sessionsRoutes = require("./routes/sessionRoutes");
+const roles = require("./utils/roles");
+const winston = require("winston");
+const { createLogger, format, transports } = winston;
+
+// Logger para desarrollo
+const developmentLogger = createLogger({
+  level: "debug",
+  format: format.combine(format.colorize(), format.simple()),
+  transports: [new transports.Console()],
+});
+
+// Logger para producción
+const productionLogger = createLogger({
+  level: "info",
+  format: format.combine(format.timestamp(), format.json()),
+  transports: [
+    new transports.Console(),
+    new transports.DailyRotateFile({
+      filename: "logs/error-%DATE%.log",
+      datePattern: "YYYY-MM-DD",
+      zippedArchive: true,
+      maxSize: "20m",
+      maxFiles: "14d",
+      level: "error",
+    }),
+  ],
+});
+
+// Determinar qué logger usar según el entorno
+const logger =
+  process.env.NODE_ENV === "production" ? productionLogger : developmentLogger;
 
 const app = express();
 const port = 8080;
@@ -13,7 +44,7 @@ const port = 8080;
 // Configurar la sesión
 app.use(
   session({
-    secret: "ClaveClave", // Cambia esto por una clave secreta más segura
+    secret: "ClaveClave", // clave
     resave: false,
     saveUninitialized: true,
   })
@@ -23,7 +54,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware para parsear el body de las peticiones a JSON
+// Middleware para parsear el cuerpo de las peticiones a JSON
 app.use(express.json());
 
 // Rutas para sesiones
@@ -61,7 +92,7 @@ app.delete(
 );
 
 // Rutas que requieren autorización de usuario normal
-app.post("/user/addToCart", checkUser, cartController.addToCart);
+app.post("/user/addToCart", checkUser, cartsController.addToCart);
 // Rutas que requieran autorización de usuario normal aquí
 
 // Ruta para la página de inicio
@@ -94,13 +125,23 @@ app.get("/transicion", (req, res) => {
   // Aplicaré una transición aquí
 });
 
-// Manejo de errores
+// Ruta para probar los logs
+app.get("/loggerTest", (req, res) => {
+  logger.debug("Esto es un mensaje de debug");
+  logger.info("Esto es un mensaje de información");
+  logger.warn("Esto es un mensaje de advertencia");
+  logger.error("Esto es un mensaje de error");
+  logger.fatal("Esto es un mensaje fatal");
+  res.send("Logs generados, verifica la consola o los archivos de registro.");
+});
+
+// Manejo de errores personalizado
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(500).send("Algo salió mal en el servidor");
 });
 
 // Iniciar el servidor
 app.listen(port, () => {
-  console.log(`Servidor escuchando en http://localhost:${port}`);
+  logger.info(`Servidor escuchando en http://localhost:${port}`);
 });

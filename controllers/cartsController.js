@@ -59,27 +59,39 @@ exports.purchaseCart = async (req, res) => {
       return res.status(404).json({ error: "Carrito no encontrado" });
     }
 
-    // Implementa la lógica de finalización de la compra aquí
-    // Verifica el stock de los productos en el carrito, calcula el monto total, genera un Ticket, etc.
+    // Verificar el stock de los productos en el carrito y calcular el monto total
+    let totalAmount = 0;
+    const productsToRemove = [];
 
-    // Ejemplo de generación de un Ticket
-    const ticket = new Ticket({
-      code: "GENERATED_CODE", // Genera un código único aquí
-      purchase_datetime: new Date(),
-      amount: 100, // Calcula el monto total aquí
-      purchaser: req.user.email, // Correo electrónico del usuario
-    });
+    for (const item of cart.products) {
+      const product = item.product;
+      if (!product.stock || product.stock < item.quantity) {
+        productsToRemove.push(item._id);
+      } else {
+        totalAmount += product.price * item.quantity;
+        product.stock -= item.quantity;
+        await product.save();
+      }
+    }
 
-    // Guarda el Ticket en la base de datos
-    await ticket.save();
+    // Eliminar los productos que se compraron o no tenían stock
+    cart.products = cart.products.filter(
+      (item) => !productsToRemove.includes(item._id)
+    );
 
-    // Limpia el carrito (elimina los productos que se compraron)
-    cart.products = cart.products.filter((item) => {
-      return !item.product.stock || item.product.stock >= item.quantity;
-    });
-
-    // Guarda el carrito actualizado en la base de datos
+    // Guardar el carrito actualizado en la base de datos
     await cart.save();
+
+    // Generar un Ticket para la compra
+    const ticket = new Ticket({
+      code: generateUniqueCode(),
+      purchase_datetime: new Date(),
+      amount: totalAmount,
+      purchaser: req.user.email,
+    });
+
+    // Guardar el Ticket en la base de datos
+    await ticket.save();
 
     res.status(200).json({ message: "Compra realizada con éxito", ticket });
   } catch (error) {
@@ -87,3 +99,9 @@ exports.purchaseCart = async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
+// Función para generar un código único para el Ticket
+function generateUniqueCode() {
+  // Generación de un código único aquí
+  return "GENERATED_CODE";
+}

@@ -1,4 +1,4 @@
-const { isAdmin, isUser } = require("./roles"); // Importa funciones para verificar roles
+const { isAdmin, isUser } = require("../utils/roles"); // Importa funciones para verificar roles
 
 // Middleware para verificar si el usuario es administrador
 function checkAdmin(req, res, next) {
